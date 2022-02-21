@@ -38,7 +38,7 @@ var data = [
     }
   ];
 
-  var nextId = 100;
+  var nextId = 10006;
 
   $(document).ready(function(){
 
@@ -81,7 +81,7 @@ var data = [
         rows = rows + '<td data-id="'+value.id+'">';
         rows = rows + '<button class="btn btn-danger btn-sm delete-employee">Elimina</button>';
         rows = rows + '&nbsp&nbsp';
-        rows = rows + '<button class="btn btn-secondary btn-sm edit-employee">Modifica</button>';
+        rows = rows + '<button class="btn btn-secondary btn-sm edit-employee" data-toggle="modal" data-target="#edit-employee">Modifica</button>';
         rows = rows + '</td>';
         rows = rows + '</tr>';
       });
@@ -89,29 +89,60 @@ var data = [
     }
 
     //modificare un impiegato
-    $("body").on("click","edit-employee-form",function(){
+    $("body").on("click",".edit-employee",function(){
       var id = $(this).parent("td").data('id');
-      var date = $(this).parent("td").data('id').text();
-      var name = $(this).parent("td").data('id').text();
-      var surname = $(this).parent("td").data('id').text();
-      var sex = $(this).parent("td").data('id').text();
+      var sex = $(this).parent("td").prev("td").text();
+      var name = $(this).parent("td").prev("td").prev("td").prev("td").text();
+      var surname = $(this).parent("td").prev("td").prev("td").text();
+      var date = $(this).parent("td").prev("td").prev("td").prev("td").prev("td").text();
       display = "edit";
 
       $("#date_edit").val(date);
       $("#name_edit").val(name);
       $("#surname_edit").val(surname);
       $("#sex_edit").val(sex);
-      $("#edit-employee-form").find(".edit-id").val(id);
+      $("edit-book-form").find(".edit-id").val(id);
       
+      $('#edit-employee-form').on('submit', function(e){
+        e.preventDefault();
+        var form_action = $("#edit-employee-form").attr("action");
+        var dateE = $("#date_edit").val();
+        var nameE = $("#name_edit").val();
+        var surnameE = $("#surname_edit").val();
+        var sexE = $("#sex_edit").val();
+        dysplay = "create";
+  
+        if(name != '' && surname != '' && date != '' && sex != ''){
+          
+          for(let i =0 ; i < data.length; i++){
+            if(data[i].id == id){
+              data[i].firstName =  nameE;
+              data[i].lastName = surnameE;
+              data[i].birthDate = dateE;
+              data[i].gender = sexE;
+              break;
+            }
+          }
+  
+          displayEmployeeList();
+  
+          $("#edit-employee").modal('hide');
+          toastr.success('Modifiche Accettate.', 'Successo', {timeOut: 5000});
+  
+        }else{
+          alert('Tutti i campi sono obbligatori. Assicurati di compilare tutti i campi correttamente.')
+        }
+      });
+
     });
 
     //eliminare un impiegato
-    $("boby").on("click",".delete-employee",function(){
+    $("body").on("click",".delete-employee",function(){
       var id = $(this).parent("td").data('id');
       for(let i = 0; i < data.length; i++){
         if(data[i].id == id){
           data.splice(i, 1);
-        break;
+          break;
         }
       }
       displayEmployeeList();
