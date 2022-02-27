@@ -1,48 +1,18 @@
-var data = [
-    {
-      "id": 10001,
-      "birthDate": "1953-09-01",
-      "firstName": "Georgi",
-      "lastName": "Facello",
-      "gender": "M",
-    },
-    {
-      "id": 10002,
-      "birthDate": "1964-06-01",
-      "firstName": "Bezalel",
-      "lastName": "Simmel",
-      "gender": "F",
-    },
-    {
-      "id": 10003,
-      "birthDate": "1959-12-02",
-      "firstName": "Parto",
-      "lastName": "Bamford",
-      "gender": "M",
-    },
-    {
-      "id": 10004,
-      "birthDate": "1954-04-30",
-      "firstName": "Chirstian",
-      "lastName": "Koblick",
-      "gender": "M",
-  
-    },
-    {
-      "id": 10005,
-      "birthDate": "1955-01-20",
-      "firstName": "Kyoichi",
-      "lastName": "Maliniak",
-      "gender": "M",
-  
-    }
-  ];
+var data = [];
 
   var nextId = 10006;
 
   $(document).ready(function(){
 
-    displayEmployeeList();
+    $.ajax({
+      method: "GET",
+      url: "http://localhost:8080/employees"
+    })
+      .done(function( msg ){
+          console.log(msg['_embedded']['employees']);
+          data = msg['_embedded']['employees'];
+          displayEmployeeList();
+      });
 
     //creare un nuovo impiegato
     $('#create-employee-form').on('submit', function(e){
@@ -95,27 +65,28 @@ var data = [
       var name = $(this).parent("td").prev("td").prev("td").prev("td").text();
       var surname = $(this).parent("td").prev("td").prev("td").text();
       var date = $(this).parent("td").prev("td").prev("td").prev("td").prev("td").text();
-      display = "edit";
+      //display = "edit";
 
       $("#date_edit").val(date);
       $("#name_edit").val(name);
       $("#surname_edit").val(surname);
       $("#sex_edit").val(sex);
-      $("edit-book-form").find(".edit-id").val(id);
+      $("#edit-employee-form").find(".edit-id").val(id);
       
       $('#edit-employee-form').on('submit', function(e){
         e.preventDefault();
-        var form_action = $("#edit-employee-form").attr("action");
+        //var form_action = $("#edit-employee-form").attr("action");
+        var idE = $("#id_edit").val();
         var dateE = $("#date_edit").val();
         var nameE = $("#name_edit").val();
         var surnameE = $("#surname_edit").val();
         var sexE = $("#sex_edit").val();
-        dysplay = "create";
+        //display = "create";
   
         if(name != '' && surname != '' && date != '' && sex != ''){
           
-          for(let i =0 ; i < data.length; i++){
-            if(data[i].id == id){
+          for(let i = 0 ; i < data.length; i++){
+            if(data[i].id == idE){
               data[i].firstName =  nameE;
               data[i].lastName = surnameE;
               data[i].birthDate = dateE;
@@ -127,7 +98,7 @@ var data = [
           displayEmployeeList();
   
           $("#edit-employee").modal('hide');
-          toastr.success('Modifiche Accettate.', 'Successo', {timeOut: 5000});
+          //toastr.success('Modifiche Accettate', 'Successo', {timeOut: 5000});
   
         }else{
           alert('Tutti i campi sono obbligatori. Assicurati di compilare tutti i campi correttamente.')
