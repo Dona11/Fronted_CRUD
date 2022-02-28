@@ -1,23 +1,61 @@
 var data = [];
-
-  var nextId = 10006;
+var links;
+var page = 0;
+var api = "http://localhost:8080/employees?page="+page+"&size=20";
+var nextId = 500000;
 
   $(document).ready(function(){
 
-    $.ajax({
-      method: "GET",
-      url: "http://localhost:8080/employees"
-    })
-      .done(function( msg ){
-          console.log(msg['_embedded']['employees']);
-          data = msg['_embedded']['employees'];
-          displayEmployeeList();
-      });
 
+    get();
+    
+
+    $("#next-button").on("click", function() {
+      api = links['next']['href'];
+      page++;
+      get();
+    });
+
+    $("#last-button").on("click", function() {
+      api = links['last']['href'];
+      get();
+    });
+    
+    $("#first-button").on("click", function() {
+      api = links['first']['href'];
+      get();
+    });
+
+    $("#previous-button").on("click", function() {
+      page--;
+      api = "http://localhost:8080/employees?page="+page+"&size=20";
+      get();
+    });
+
+    function get() {
+      $.ajax({
+        method: "GET",
+        url: api 
+      })
+        .done(function( msg ){
+            console.log(msg['_embedded']['employees']);
+            data = msg['_embedded']['employees'];
+            links = msg['_links'];
+            displayEmployeeList();
+        });
+  
+    }
+  /*
+      $('#myTable').DataTable( {
+        ajax: 'http://localhost:8080/employees'
+    } );
+  */ 
+      
     //creare un nuovo impiegato
     $('#create-employee-form').on('submit', function(e){
       e.preventDefault();
-      var form_action = $("#create-employee-form").attr("action");
+
+      //var form_action = $("#create-employee-form").attr("action");
       var date = $("#date").val();
       var name = $("#name").val();
       var surname = $("#surname").val();
@@ -29,9 +67,9 @@ var data = [];
         nextId++;
 
         displayEmployeeList();
-
+        $("#create-employee-form")[0].reset();
         $("#create-employee").modal('hide');
-        toastr.success('Impiegato Creato Correttamente.', 'Successo', {timeOut: 5000});
+        //toastr.success('Impiegato Creato Correttamente.', 'Successo', {timeOut: 5000});
 
       }else{
         alert('Tutti i campi sono obbligatori. Assicurati di compilare tutti i campi correttamente.')
