@@ -45,6 +45,8 @@ var nextId = 500000;
         });
   
     }
+
+
   /*
       $('#myTable').DataTable( {
         ajax: 'http://localhost:8080/employees'
@@ -55,6 +57,19 @@ var nextId = 500000;
     $('#create-employee-form').on('submit', function(e){
       e.preventDefault();
 
+      function put(){
+
+        $.ajax({
+          url: 'http://localhost:8080/employees?page=15001&size=20',
+          type: 'PUT',
+          data: "id="+nextId+"&birthDate="+date+"&firstName="+name+"&lastName="+surname+"&gender="+sex,
+          success: function(data) {
+            alert('Dati caricati correttamente');
+          }
+        });
+
+      }
+
       //var form_action = $("#create-employee-form").attr("action");
       var date = $("#date").val();
       var name = $("#name").val();
@@ -63,9 +78,10 @@ var nextId = 500000;
       display = "create";
 
       if(name != '' && surname != '' && date != '' && sex != ''){
-        data.push({id: nextId, birthDate: date, firstName: name, lastName: surname, gender: sex});
+        //data.push({id: nextId, birthDate: date, firstName: name, lastName: surname, gender: sex});
+        //$.post('http://localhost:8080/employees?page=15001&size=20', {id: nextId, birthDate: date, firstName: name, lastName: surname, gender: sex});
+        put();
         nextId++;
-
         displayEmployeeList();
         $("#create-employee-form")[0].reset();
         $("#create-employee").modal('hide');
@@ -87,9 +103,9 @@ var nextId = 500000;
         rows = rows + '<td>' + value.lastName + '</td>';
         rows = rows + '<td>' + value.gender + '</td>';
         rows = rows + '<td data-id="'+value.id+'">';
-        rows = rows + '<button class="btn btn-danger btn-sm delete-employee">Elimina</button>';
-        rows = rows + '&nbsp&nbsp';
         rows = rows + '<button class="btn btn-secondary btn-sm edit-employee" data-toggle="modal" data-target="#edit-employee">Modifica</button>';
+        rows = rows + '&nbsp&nbsp';
+        rows = rows + '<button class="btn btn-danger btn-sm delete-employee">Elimina</button>';
         rows = rows + '</td>';
         rows = rows + '</tr>';
       });
