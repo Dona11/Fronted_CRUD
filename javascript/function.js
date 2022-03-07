@@ -1,6 +1,6 @@
 var data = [];
 var links;
-var page = 0;
+var page;
 var api = "http://localhost:8080/employees?page="+page+"&size=20";
 var nextId = 500000;
 
@@ -12,7 +12,7 @@ var nextId = 500000;
 
     $("#next-button").on("click", function() {
       api = links['next']['href'];
-      page++;
+      //page++;
       get();
     });
 
@@ -27,8 +27,8 @@ var nextId = 500000;
     });
 
     $("#previous-button").on("click", function() {
-      page--;
-      api = "http://localhost:8080/employees?page="+page+"&size=20";
+      //page--;
+      api = links['prev']['href'];
       get();
     });
 
@@ -41,11 +41,12 @@ var nextId = 500000;
             console.log(msg['_embedded']['employees']);
             data = msg['_embedded']['employees'];
             links = msg['_links'];
+            page = msg['page']['number'];
             displayEmployeeList();
+            displayPagination();
         });
   
     }
-
 
   /*
       $('#myTable').DataTable( {
@@ -57,19 +58,6 @@ var nextId = 500000;
     $('#create-employee-form').on('submit', function(e){
       e.preventDefault();
 
-      function put(){
-
-        $.ajax({
-          url: 'http://localhost:8080/employees?page=15001&size=20',
-          type: 'PUT',
-          data: "id="+nextId+"&birthDate="+date+"&firstName="+name+"&lastName="+surname+"&gender="+sex,
-          success: function(data) {
-            alert('Dati caricati correttamente');
-          }
-        });
-
-      }
-
       //var form_action = $("#create-employee-form").attr("action");
       var date = $("#date").val();
       var name = $("#name").val();
@@ -80,8 +68,14 @@ var nextId = 500000;
       if(name != '' && surname != '' && date != '' && sex != ''){
         //data.push({id: nextId, birthDate: date, firstName: name, lastName: surname, gender: sex});
         //$.post('http://localhost:8080/employees?page=15001&size=20', {id: nextId, birthDate: date, firstName: name, lastName: surname, gender: sex});
-        put();
-        nextId++;
+        $.ajax({
+          method: "POST",
+          url: 'http://localhost:8080/employees/',
+          body: JSON.stringify({birthDate: date, firstName: name, lastName: surname, gender: sex})
+        })
+          .done(function( msg ){
+            get();
+        });
         displayEmployeeList();
         $("#create-employee-form")[0].reset();
         $("#create-employee").modal('hide');
@@ -103,9 +97,9 @@ var nextId = 500000;
         rows = rows + '<td>' + value.lastName + '</td>';
         rows = rows + '<td>' + value.gender + '</td>';
         rows = rows + '<td data-id="'+value.id+'">';
-        rows = rows + '<button class="btn btn-secondary btn-sm edit-employee" data-toggle="modal" data-target="#edit-employee">Modifica</button>';
+        rows = rows + '<button class="btn btn-secondary btn-sm edit-employee" data-toggle="modal" data-target="#edit-employee"><i class="fa-solid fa-pen"></i></button>';
         rows = rows + '&nbsp&nbsp';
-        rows = rows + '<button class="btn btn-danger btn-sm delete-employee">Elimina</button>';
+        rows = rows + '<button class="btn btn-danger btn-sm delete-employee"><i class="fa-solid fa-trash-can"></i></button>';
         rows = rows + '</td>';
         rows = rows + '</tr>';
       });
@@ -164,13 +158,19 @@ var nextId = 500000;
     //eliminare un impiegato
     $("body").on("click",".delete-employee",function(){
       var id = $(this).parent("td").data('id');
-      for(let i = 0; i < data.length; i++){
-        if(data[i].id == id){
-          data.splice(i, 1);
-          break;
-        }
-      }
-      displayEmployeeList();
+      $.ajax({
+        method: "DELETE",
+        url: 'http://localhost:8080/employees/'+id
+      })
+        .done(function( msg ){
+          get();
+      });
     });
 
+    function displayPagination(){
+
+      var code = '';
+      code += '<button class="btn btn-info" disabled>'+page+'</button>';
+      $('pagination').html(code);
+    }
   });
