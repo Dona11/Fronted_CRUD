@@ -41,22 +41,16 @@
             </thead>
             <tbody>
             </tbody>
-
         </table>
 
         <div class="text-center">
-            <button class="btn btn-primary" id="first-button">Prima Pagina</button>
-            <button class="btn btn-info" id="previous-button">Pagina Precedente</button>
+            <button class="btn btn-outline-dark float-start me-3" id="first-button">Prima Pagina</button>
+            <button class="btn btn-outline-dark float-start" id="previous-button">Pagina Precedente</button>
             <pagination></pagination>
-            <button class="btn btn-primary" id="next-button">Pagina Successiva</button>
-            <button class="btn btn-info" id="last-button">Ultima Pagina</button>
-            <br><br><br>
+            <button class="btn btn-outline-dark float-end ms-3" id="last-button">Ultima Pagina</button>
+            <button class="btn btn-outline-dark float-end" id="next-button">Pagina Successiva</button>
         </div>
-        
-
     </div>
-
-    
 
     <div id="create-employee" class="modal" tabindex="-1" role="dialog" aria-labelledby="modallabel">
         <div class="modal-dialog" role="document">
@@ -70,10 +64,10 @@
                     </div>
                 </div>
                 <div class="modal-body">
-                    <form id="create-employee-form" data-toggle="validator" action="api/create.php" method="POST">
+                    <form id="create-employee-form" data-toggle="validator">
                         <div class="form-group">
                             <label class="control-label" for="date">Data di nascita:</label>
-                            <input type="text" id="date" name="date" class="form-control" data-error="Inserisci la data di nascita dell'impiegato." required />
+                            <input type="date" id="date" name="date" class="form-control" data-error="Inserisci la data di nascita dell'impiegato." required />
                             <div class="help-block with-error text-danger"></div>
                         </div>
                         <div class="form-group">
@@ -88,7 +82,10 @@
                         </div>
                         <div class="form-group">
                             <label class="control-label" for="sex">Sesso:</label>
-                            <input type="text" id="sex" name="sex" class="form-control" data-error="Inserisci il sesso dell'impiegato." required />
+                            <select id="sex" name="sex" class="form-select" data-error="Inserisci il sesso dell'impiegato." required>
+                                <option value="M">Maschio</option>
+                                <option value="F">Femmina</option>
+                            </select>
                             <div class="help-block with-error text-danger"></div>
                         </div>
                         <div class="form-group mt-4">
@@ -116,7 +113,7 @@
                         <input type="hidden" id="id_edit" name="id" class="edit-id">
                         <div class="form-group">
                             <label class="control-label" for="date_edit">Data di nascita:</label>
-                            <input type="text" id="date_edit" name="date" class="form-control" data-error="Inserisci la data di nascita dell'impiegato." required />
+                            <input type="date" id="date_edit" name="date" class="form-control" data-error="Inserisci la data di nascita dell'impiegato." required />
                             <div class="help-block with-error text-danger"></div>
                         </div>
                         <div class="form-group">
@@ -131,7 +128,10 @@
                         </div>
                         <div class="form-group">
                             <label class="control-label" for="sex_edit">Sesso:</label>
-                            <input type="text" id="sex_edit" name="sex" class="form-control" data-error="Inserisci il sesso dell'impiegato." required />
+                            <select id="sex_edit" name="sex" class="form-select" data-error="Inserisci il sesso dell'impiegato." required>
+                                <option value="M">Maschio</option>
+                                <option value="F">Femmina</option>
+                            </select>
                             <div class="help-block with-error text-danger"></div>
                         </div>
                         <div class="form-group mt-4">

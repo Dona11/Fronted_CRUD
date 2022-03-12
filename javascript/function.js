@@ -2,32 +2,23 @@ var data = [];
 var links;
 var page;
 var api = "http://localhost:8080/employees?page="+page+"&size=20";
-var nextId = 500000;
 
   $(document).ready(function(){
-
-
     get();
     
-
     $("#next-button").on("click", function() {
       api = links['next']['href'];
-      //page++;
       get();
     });
-
     $("#last-button").on("click", function() {
       api = links['last']['href'];
       get();
     });
-    
     $("#first-button").on("click", function() {
       api = links['first']['href'];
       get();
     });
-
-    $("#previous-button").on("click", function() {
-      //page--;
+    $("#previous-button").on("click", function() { 
       api = links['prev']['href'];
       get();
     });
@@ -45,47 +36,8 @@ var nextId = 500000;
             displayEmployeeList();
             displayPagination();
         });
-  
     }
-
-  /*
-      $('#myTable').DataTable( {
-        ajax: 'http://localhost:8080/employees'
-    } );
-  */ 
       
-    //creare un nuovo impiegato
-    $('#create-employee-form').on('submit', function(e){
-      e.preventDefault();
-
-      //var form_action = $("#create-employee-form").attr("action");
-      var date = $("#date").val();
-      var name = $("#name").val();
-      var surname = $("#surname").val();
-      var sex = $("#sex").val();
-      display = "create";
-
-      if(name != '' && surname != '' && date != '' && sex != ''){
-        //data.push({id: nextId, birthDate: date, firstName: name, lastName: surname, gender: sex});
-        //$.post('http://localhost:8080/employees?page=15001&size=20', {id: nextId, birthDate: date, firstName: name, lastName: surname, gender: sex});
-        $.ajax({
-          method: "POST",
-          url: 'http://localhost:8080/employees/',
-          body: JSON.stringify({birthDate: date, firstName: name, lastName: surname, gender: sex})
-        })
-          .done(function( msg ){
-            get();
-        });
-        displayEmployeeList();
-        $("#create-employee-form")[0].reset();
-        $("#create-employee").modal('hide');
-        //toastr.success('Impiegato Creato Correttamente.', 'Successo', {timeOut: 5000});
-
-      }else{
-        alert('Tutti i campi sono obbligatori. Assicurati di compilare tutti i campi correttamente.')
-      }
-    });
-
     //visualizzare la lista degli impiegati
     function displayEmployeeList(){
       var rows = '';
@@ -105,15 +57,44 @@ var nextId = 500000;
       });
       $("tbody").html(rows);
     }
+    
+    //creare un nuovo impiegato
+    $('#create-employee-form').on('submit', function(e){
+      e.preventDefault();
+      var date = $("#date").val();
+      var name = $("#name").val();
+      var surname = $("#surname").val();
+      var sex = $("#sex").val();
+
+        $.ajax({
+          url: "http://localhost:8080/employees/",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify({
+                "birthDate": date,
+                 "firstName": name,
+                 "gender": sex,
+                 "id": 0,
+                 "lastName": surname
+                })
+        })
+          .done(function(msg){
+            get();
+        })
+          .fail(function() {
+            alert( "Errore durante l'inserimento dell'impiegato" );
+        });
+        $("#create-employee-form")[0].reset();
+        $("#create-employee").modal('hide');
+    });
 
     //modificare un impiegato
     $("body").on("click",".edit-employee",function(){
       var id = $(this).parent("td").data('id');
       var sex = $(this).parent("td").prev("td").text();
-      var name = $(this).parent("td").prev("td").prev("td").prev("td").text();
       var surname = $(this).parent("td").prev("td").prev("td").text();
+      var name = $(this).parent("td").prev("td").prev("td").prev("td").text();
       var date = $(this).parent("td").prev("td").prev("td").prev("td").prev("td").text();
-      //display = "edit";
 
       $("#date_edit").val(date);
       $("#name_edit").val(name);
@@ -123,36 +104,29 @@ var nextId = 500000;
       
       $('#edit-employee-form').on('submit', function(e){
         e.preventDefault();
-        //var form_action = $("#edit-employee-form").attr("action");
         var idE = $("#id_edit").val();
         var dateE = $("#date_edit").val();
         var nameE = $("#name_edit").val();
         var surnameE = $("#surname_edit").val();
         var sexE = $("#sex_edit").val();
-        //display = "create";
   
-        if(name != '' && surname != '' && date != '' && sex != ''){
-          
-          for(let i = 0 ; i < data.length; i++){
-            if(data[i].id == idE){
-              data[i].firstName =  nameE;
-              data[i].lastName = surnameE;
-              data[i].birthDate = dateE;
-              data[i].gender = sexE;
-              break;
-            }
-          }
-  
-          displayEmployeeList();
-  
-          $("#edit-employee").modal('hide');
-          //toastr.success('Modifiche Accettate', 'Successo', {timeOut: 5000});
-  
-        }else{
-          alert('Tutti i campi sono obbligatori. Assicurati di compilare tutti i campi correttamente.')
-        }
+        $.ajax({
+          url: 'http://localhost:8080/employees/'+idE,
+          method: "PUT",
+          contentType: 'application/json',
+          data: JSON.stringify({
+            "birthDate": dateE,
+             "firstName": nameE,
+             "gender": sexE,
+             "id": idE,
+             "lastName": surnameE
+            })
+        })
+          .done(function(msg){
+            $("#edit-employee").modal('hide');
+            get();
+        });
       });
-
     });
 
     //eliminare un impiegato
@@ -167,10 +141,11 @@ var nextId = 500000;
       });
     });
 
+    //visualizzare l'impaginazione
     function displayPagination(){
 
       var code = '';
-      code += '<button class="btn btn-info" disabled>'+page+'</button>';
+      code += '<button class="btn btn-outline-dark" disabled>'+page+'</button>';
       $('pagination').html(code);
     }
   });
