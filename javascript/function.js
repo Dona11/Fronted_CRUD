@@ -78,11 +78,11 @@ var api = "http://localhost:8080/employees?page="+page+"&size=20";
                  "lastName": surname
                 })
         })
-          .done(function(msg){
+          .done(function(){
             get();
         })
           .fail(function() {
-            alert( "Errore durante l'inserimento dell'impiegato" );
+            alert("Errore durante l'inserimento dell'impiegato!");
         });
         $("#create-employee-form")[0].reset();
         $("#create-employee").modal('hide');
@@ -122,11 +122,14 @@ var api = "http://localhost:8080/employees?page="+page+"&size=20";
              "lastName": surnameE
             })
         })
-          .done(function(msg){
-            $("#edit-employee").modal('hide');
+          .done(function(){
             get();
+        })
+          .fail(function() {
+            alert("Errore durante la modifica dell'impiegato!");
         });
-      });
+        $("#edit-employee").modal('hide');
+        });
     });
 
     //eliminare un impiegato
