@@ -101,36 +101,38 @@ var api = "http://localhost:8080/employees?page="+page+"&size=20";
       $("#surname_edit").val(surname);
       $("#sex_edit").val(sex);
       $("#edit-employee-form").find(".edit-id").val(id);
-      
-      $('#edit-employee-form').on('submit', function(e){
-        e.preventDefault();
-        var idE = $("#id_edit").val();
-        var dateE = $("#date_edit").val();
-        var nameE = $("#name_edit").val();
-        var surnameE = $("#surname_edit").val();
-        var sexE = $("#sex_edit").val();
-  
-        $.ajax({
-          url: 'http://localhost:8080/employees/'+idE,
-          method: "PUT",
-          contentType: 'application/json',
-          data: JSON.stringify({
-            "birthDate": dateE,
-             "firstName": nameE,
-             "gender": sexE,
-             "id": idE,
-             "lastName": surnameE
-            })
-        })
-          .done(function(){
-            get();
-        })
-          .fail(function() {
-            alert("Errore durante la modifica dell'impiegato!");
-        });
-        $("#edit-employee").modal('hide');
-        });
+    
     });
+
+    //continuo del modificare un impiegato
+    $('#edit-employee-form').on('submit', function(e){
+      e.preventDefault();
+      var idE = $("#id_edit").val();
+      var dateE = $("#date_edit").val();
+      var nameE = $("#name_edit").val();
+      var surnameE = $("#surname_edit").val();
+      var sexE = $("#sex_edit").val();
+
+      $.ajax({
+        url: 'http://localhost:8080/employees/'+idE,
+        method: "PUT",
+        contentType: 'application/json',
+        data: JSON.stringify({
+          "birthDate": dateE,
+           "firstName": nameE,
+           "gender": sexE,
+           "id": idE,
+           "lastName": surnameE
+          })
+      })
+        .done(function(){
+          get();
+      })
+        .fail(function() {
+          alert("Errore durante la modifica dell'impiegato!");
+      });
+      $("#edit-employee").modal('hide');
+      });
 
     //eliminare un impiegato
     $("body").on("click",".delete-employee",function(){
@@ -151,4 +153,5 @@ var api = "http://localhost:8080/employees?page="+page+"&size=20";
       code += '<button class="btn btn-outline-dark" disabled>'+page+'</button>';
       $('pagination').html(code);
     }
+    
   });
