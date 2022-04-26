@@ -1,7 +1,8 @@
 var data = [];
 var links;
-var page;
-var api = "http://localhost:8080/employees?page="+page+"&size=20";
+var page = 0;
+var last;
+var api = "http://localhost:8080/index.php?page=" + page + "&size=20";
 
   $(document).ready(function(){
     get();
@@ -33,6 +34,7 @@ var api = "http://localhost:8080/employees?page="+page+"&size=20";
             data = msg['_embedded']['employees'];
             links = msg['_links'];
             page = msg['page']['number'];
+            last = msg['page']['totalPages'];
             displayEmployeeList();
             displayPagination();
         });
@@ -44,11 +46,11 @@ var api = "http://localhost:8080/employees?page="+page+"&size=20";
       $.each(data, function(index, value){
         rows = rows + '<tr>';
         rows = rows + '<td>' + value.id + '</td>';
-        rows = rows + '<td>' + value.birthDate + '</td>';
-        rows = rows + '<td>' + value.firstName + '</td>';
-        rows = rows + '<td>' + value.lastName + '</td>';
+        rows = rows + '<td>' + value.birth_date + '</td>';
+        rows = rows + '<td>' + value.first_name + '</td>';
+        rows = rows + '<td>' + value.last_name + '</td>';
         rows = rows + '<td>' + value.gender + '</td>';
-        rows = rows + '<td data-id="'+value.id+'">';
+        rows = rows + '<td data-id="' + value.id + '">';
         rows = rows + '<button class="btn btn-secondary btn-sm edit-employee" data-toggle="modal" data-target="#edit-employee"><i class="fa-solid fa-pen"></i></button>';
         rows = rows + '&nbsp&nbsp';
         rows = rows + '<button class="btn btn-danger btn-sm delete-employee"><i class="fa-solid fa-trash-can"></i></button>';
@@ -67,15 +69,14 @@ var api = "http://localhost:8080/employees?page="+page+"&size=20";
       var sex = $("#sex").val();
 
         $.ajax({
-          url: "http://localhost:8080/employees/",
+          url: "http://localhost:8080/index.php",
           method: "POST",
           contentType: "application/json",
           data: JSON.stringify({
-                "birthDate": date,
-                 "firstName": name,
+                "birth_date": date,
+                 "first_name": name,
                  "gender": sex,
-                 "id": 0,
-                 "lastName": surname
+                 "last_name": surname
                 })
         })
           .done(function(){
@@ -114,15 +115,14 @@ var api = "http://localhost:8080/employees?page="+page+"&size=20";
       var sexE = $("#sex_edit").val();
 
       $.ajax({
-        url: 'http://localhost:8080/employees/'+idE,
+        url: 'http://localhost:8080/index.php?id=' + idE,
         method: "PUT",
         contentType: 'application/json',
         data: JSON.stringify({
-          "birthDate": dateE,
-           "firstName": nameE,
+          "birth_date": dateE,
+           "first_name": nameE,
            "gender": sexE,
-           "id": idE,
-           "lastName": surnameE
+           "last_name": surnameE
           })
       })
         .done(function(){
@@ -139,7 +139,7 @@ var api = "http://localhost:8080/employees?page="+page+"&size=20";
       var id = $(this).parent("td").data('id');
       $.ajax({
         method: "DELETE",
-        url: 'http://localhost:8080/employees/'+id
+        url: 'http://localhost:8080/index.php?id='+id
       })
         .done(function( msg ){
           get();
@@ -150,7 +150,21 @@ var api = "http://localhost:8080/employees?page="+page+"&size=20";
     function displayPagination(){
 
       var code = '';
-      code += '<button class="btn btn-outline-dark" disabled>'+page+'</button>';
+      if(page == 0){
+        document.getElementById('first-button').setAttribute("disabled", "disabled");
+        document.getElementById('previous-button').setAttribute("disabled", "disabled");
+      }else{
+        document.getElementById('first-button').removeAttribute("disabled");
+        document.getElementById('previous-button').removeAttribute("disabled");
+      }
+      if(page == last){
+        document.getElementById('last-button').setAttribute("disabled", "disabled");
+        document.getElementById('next-button').setAttribute("disabled", "disabled");
+      }else{
+        document.getElementById('last-button').removeAttribute("disabled");
+        document.getElementById('next-button').removeAttribute("disabled");
+      }
+      code += '<button class="btn btn-outline-dark" disabled>' + page + '</button>';
       $('pagination').html(code);
     }
     
